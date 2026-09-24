@@ -96,7 +96,8 @@ INSERT INTO order_item (orders_id, product_id, quantity, price) VALUES
 	(3, 3, 1, 288.00),
 	(4, 2, 1, 195.50),
 	(5, 5, 1, 822.00);
-	
+
+
 SELECT orders_status FROM orders WHERE orders_status = 'New';
 
 INSERT INTO brand(brand_title) VALUES ('Chanel');
