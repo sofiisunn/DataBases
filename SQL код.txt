@@ -1,0 +1,106 @@
+DROP TABLE IF EXISTS product_category;
+DROP TABLE IF EXISTS order_item;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS brand;
+ 
+CREATE TABLE brand (
+	brand_id SERIAL PRIMARY KEY,
+	brand_title VARCHAR(100) NOT NULL UNIQUE
+);
+CREATE TABLE category (
+	category_id SERIAL PRIMARY KEY,
+	category_title VARCHAR(100) NOT NULL UNIQUE
+);
+CREATE TABLE customer (
+	customer_id SERIAL PRIMARY KEY,
+	customer_first_name VARCHAR(100) NOT NULL,
+	customer_last_name VARCHAR(100) NOT NULL,
+	customer_email VARCHAR(100) NOT NULL UNIQUE,
+	customer_phone_number VARCHAR(100) NOT NULL UNIQUE,
+	customer_birth_date DATE NOT NULL
+);
+CREATE TABLE product (
+    product_id SERIAL PRIMARY KEY,
+	brand_id INTEGER NOT NULL REFERENCES brand(brand_id),
+    product_title VARCHAR(100) NOT NULL,
+    product_price NUMERIC(8, 2) NOT NULL CHECK (product_price>0),
+	product_expiration_date DATE,
+    product_pao_months INTEGER,
+	product_volume VARCHAR(50) NOT NULL,
+	product_application_method TEXT
+);
+CREATE TABLE product_category (
+	product_id INTEGER REFERENCES product(product_id),
+	category_id INTEGER REFERENCES category(category_id),
+	PRIMARY KEY (product_id, category_id)
+);
+CREATE TABLE orders (
+	orders_id SERIAL PRIMARY KEY,
+	customer_id INTEGER REFERENCES customer(customer_id),
+	orders_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	orders_price NUMERIC(8, 2) NOT NULL CHECK (orders_price>0),
+	orders_status VARCHAR(50) NOT NULL,
+	orders_delivery_address TEXT NOT NULL
+);
+CREATE TABLE order_item (
+	orders_id INTEGER REFERENCES orders(orders_id),
+	product_id INTEGER REFERENCES product(product_id),
+	quantity INTEGER NOT NULL,
+	price NUMERIC(8, 2) NOT NULL CHECK (price>0),
+	PRIMARY KEY (orders_id, product_id)
+);
+
+INSERT INTO brand (brand_title) VALUES 
+	('Kiko Milano'),
+	('CeraVe'),
+	('Bioderma'),
+	('Dior'),
+	('Purito');
+INSERT INTO category (category_title) VALUES 
+	('Makeup'),
+	('Skincare'),
+	('Fragrance'),
+	('Hair'),
+	('Bath&Body');
+INSERT INTO customer (customer_first_name, customer_last_name, customer_email, customer_phone_number, customer_birth_date) VALUES
+	('Ann', 'Smith', 'annsmith@example.com', '+447123456789', '1996-04-12'),
+	('Emma', 'Watson', 'emmawatson@example.com', '+447987654321', '1990-08-24'),
+	('Emily', 'Brown', 'emilybrown@example.com', '+12025550143', '2002-11-03'),
+	('Sophia', 'Muller', 'sophiamuller@example.com', '+49151234567', '1988-02-28'),
+	('Kate', 'Brooks', 'katebrooks@example.com', '+13125550199', '1999-07-19');
+INSERT INTO product (brand_id, product_title, product_price, product_expiration_date, product_pao_months, product_volume, product_application_method) VALUES
+	(1, '3D Hydra Lipgloss', 709.00, '2028-06-30', 24, '6.5 ml', 'Apply the required amount of gloss to your lips and spread evenly. Apply from the center to the edges to avoid a thick layer in the corners. For maximum effect, apply a double layer in the center.'),
+	(2, 'Moisturizing cream for dry and very dry skin of the face and body', 195.50, '2027-12-31', 12, '150 ml', 'Apply the required amount of cream to the skin and distribute with massaging movements. Avoid the area around the eyes. If it gets into the eyes, rinse them immediately with water.'),
+	(3, 'Sensibio H2O Micellar Water', 288.00, '2028-03-15', 6, '100 ml', 'Wipe your face with a cotton pad soaked in Bioderma Sensibio H2O. No need to rinse with water. Apply 1-2 times a day.'),
+	(4, 'Sauvage Eau de Parfum', 6055.00, '2030-01-01', 36, '100 ml', 'Spray on pulse points: wrists, neck and chest.'),
+	(5, 'Centella Green Level Eye Cream', 822.00, '2027-09-20', 12, '50 ml', 'Apply a small amount of cream at the last stage of care.');
+INSERT INTO product_category (product_id, category_id) VALUES
+	(1, 1),
+	(2, 2),
+	(2, 5), 
+	(3, 2), 
+	(4, 3),
+	(5, 2);
+INSERT INTO orders (customer_id, orders_price, orders_status, orders_delivery_address) VALUES
+	(1, 709.00, 'New', '10 Downing Street, Dublin, Ireland'),
+	(2, 6055.00, 'Shipped', '221B Baker Street, London, UK'),
+	(3, 288.00, 'Delivered', '742 Evergreen Terrace, Springfield, USA'),
+	(4, 195.50, 'New', '4 Privat Drive, Little Whinging, UK'),
+	(5, 822.00, 'Delivered', '1600 Pennsylvania Avenue NW, Washington, DC, USA');
+INSERT INTO order_item (orders_id, product_id, quantity, price) VALUES
+	(1, 1, 1, 709.00),
+	(2, 4, 1, 6055.00),
+	(3, 3, 1, 288.00),
+	(4, 2, 1, 195.50),
+	(5, 5, 1, 822.00);
+	
+SELECT * FROM brand;
+SELECT * FROM category;
+SELECT * FROM customer;
+SELECT * FROM product;
+SELECT * FROM product_category;
+SELECT * FROM orders;
+SELECT * FROM order_item;
